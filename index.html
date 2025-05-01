@@ -66,6 +66,11 @@
       font-size: 14px;
       color: #555;
     }
+    .product .price {
+      font-size: 16px;
+      color: #333;
+      margin: 10px 0;
+    }
     .product button {
       background-color: #28a745;
       color: white;
@@ -76,6 +81,16 @@
     }
     .product button:hover {
       background-color: #218838;
+    }
+    .remove-btn {
+      background-color: #dc3545;
+      margin-left: 10px;
+    }
+    .total-price {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 20px;
     }
     @media (max-width: 600px) {
       .container {
@@ -98,52 +113,82 @@
     Keranjang: <span id="cartCount">0</span> produk
   </div>
 
-  <div class="cart-list" id="cartList"></div>
+  <div class="cart-list" id="cartList">
+    <div class="total-price" id="totalPrice">Total Harga: Rp 0</div>
+  </div>
 
   <div class="container" id="productContainer"></div>
 
   <script>
     const products = Array.from({ length: 50 }, (_, i) => {
       let image;
+      let price;
       switch (i) {
         case 0:
           image = "https://tokyofreshdirect.com/cdn/shop/articles/not-to-be-missed-when-visiting-tokyo-the-complete-guide-to-tokyo-banana-494990_600x600_crop_center.png?v=1709777358";
+          price = 50000;
           break;
         case 1:
           image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQfusQRLdGa4FDGUUX1bBQW5Pih3xaTDEgyA&s";
+          price = 35000;
           break;
         case 2:
           image = "https://oishipedia.com/wp-content/uploads/2024/02/47be2968bf062eb2aee52cf98beb6d3b-edited.jpg";
+          price = 25000;
           break;
         case 3:
           image = "https://oishipedia.com/wp-content/uploads/2024/02/lotte-almond-chocolate-edited-1.jpg";
+          price = 30000;
           break;
         case 4:
           image = "https://www.ubuy.com.lb/productimg/?image=aHR0cHM6Ly9tLm1lZGlhLWFtYXpvbi5jb20vaW1hZ2VzL0kvNzFaQ2lNbFRaM0wuX1NMMTUwMF8uanBn.jpg";
+          price = 20000;
           break;
         default:
           image = `https://via.placeholder.com/250x150?text=Produk+${i + 1}`;
+          price = Math.floor(Math.random() * 100000) + 10000;
       }
       return {
         name: `Produk ${i + 1}`,
         description: `Deskripsi lengkap untuk Produk ${i + 1}. Ini adalah produk berkualitas tinggi yang layak Anda miliki.`,
-        image: image
+        image: image,
+        price: price
       };
     });
 
-    let cart = [];
+    let cart = {};
     const container = document.getElementById('productContainer');
     const cartDisplay = document.getElementById('cartCount');
     const cartList = document.getElementById('cartList');
+    const totalPriceDisplay = document.getElementById('totalPrice');
 
     function updateCart() {
-      cartDisplay.textContent = cart.length;
-      if (cart.length === 0) {
+      const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+      cartDisplay.textContent = totalItems;
+      let totalPrice = 0;
+      Object.entries(cart).forEach(([item, qty]) => {
+        const product = products.find(p => p.name === item);
+        totalPrice += product.price * qty;
+      });
+      totalPriceDisplay.textContent = `Total Harga: Rp ${totalPrice.toLocaleString()}`;
+      
+      if (totalItems === 0) {
         cartList.style.display = 'none';
         return;
       }
       cartList.style.display = 'block';
-      cartList.innerHTML = '<h4>Isi Keranjang:</h4><ul>' + cart.map(item => `<li>${item}</li>`).join('') + '</ul>';
+      cartList.innerHTML = '<h4>Isi Keranjang:</h4><ul>' +
+        Object.entries(cart).map(([item, qty]) => `
+          <li>${item} x ${qty} <button class="remove-btn" onclick="removeFromCart('${item}')">Hapus</button></li>
+        `).join('') + '</ul>';
+    }
+
+    function removeFromCart(item) {
+      if (cart[item]) {
+        cart[item]--;
+        if (cart[item] === 0) delete cart[item];
+        updateCart();
+      }
     }
 
     products.forEach(product => {
@@ -153,11 +198,16 @@
         <img src="${product.image}" alt="${product.name}">
         <h3>${product.name}</h3>
         <p>${product.description}</p>
+        <div class="price">Rp ${product.price.toLocaleString()}</div>
         <button>Tambah ke Keranjang</button>
       `;
       const button = div.querySelector('button');
       button.addEventListener('click', () => {
-        cart.push(product.name);
+        if (cart[product.name]) {
+          cart[product.name]++;
+        } else {
+          cart[product.name] = 1;
+        }
         updateCart();
       });
       container.appendChild(div);
