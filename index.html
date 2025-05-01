@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Katalog Produk</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 20px;
+      justify-content: center;
+    }
+    .product {
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 150px;
+      text-align: center;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+    .product:hover {
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 300px;
+      position: relative;
+      text-align: center;
+    }
+    .modal-content img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    .close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="productContainer"></div>
+
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="modalClose">&times;</span>
+      <img id="modalImage" src="" alt="Gambar Produk">
+      <h2 id="modalTitle"></h2>
+      <p id="modalDescription"></p>
+    </div>
+  </div>
+
+  <script>
+    const products = Array.from({ length: 50 }, (_, i) => {
+      let image;
+      switch (i) {
+        case 0:
+          image = "https://tokyofreshdirect.com/cdn/shop/articles/not-to-be-missed-when-visiting-tokyo-the-complete-guide-to-tokyo-banana-494990_600x600_crop_center.png?v=1709777358";
+          break;
+        case 1:
+          image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQfusQRLdGa4FDGUUX1bBQW5Pih3xaTDEgyA&s";
+          break;
+        case 2:
+          image = "https://oishipedia.com/wp-content/uploads/2024/02/47be2968bf062eb2aee52cf98beb6d3b-edited.jpg";
+          break;
+        case 3:
+          image = "https://oishipedia.com/wp-content/uploads/2024/02/lotte-almond-chocolate-edited-1.jpg";
+          break;
+        case 4:
+          image = "https://www.ubuy.com.lb/productimg/?image=aHR0cHM6Ly9tLm1lZGlhLWFtYXpvbi5jb20vaW1hZ2VzL0kvNzFaQ2lNbFRaM0wuX1NMMTUwMF8uanBn.jpg";
+          break;
+        default:
+          image = `https://via.placeholder.com/250x150?text=Produk+${i + 1}`;
+      }
+      return {
+        name: `Produk ${i + 1}`,
+        description: `Deskripsi lengkap untuk Produk ${i + 1}. Ini adalah produk berkualitas tinggi yang layak Anda miliki.`,
+        image: image
+      };
+    });
+
+    const container = document.getElementById('productContainer');
+    const modal = document.getElementById('productModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalImage = document.getElementById('modalImage');
+    const modalClose = document.getElementById('modalClose');
+
+    products.forEach((product, index) => {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerText = product.name;
+      div.addEventListener('click', () => {
+        modalTitle.innerText = product.name;
+        modalDescription.innerText = product.description;
+        modalImage.src = product.image;
+        modal.style.display = 'block';
+      });
+      container.appendChild(div);
+    });
+
+    modalClose.onclick = () => {
+      modal.style.display = 'none';
+    };
+
+    window.onclick = event => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>
