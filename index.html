@@ -27,6 +27,14 @@
       z-index: 100;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+    .cart-list {
+      max-width: 600px;
+      margin: 10px auto;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #ccc;
+      display: none;
+    }
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -75,8 +83,8 @@
         gap: 10px;
       }
       .product {
-        width: 100%;
-        max-width: 100%;
+        flex: 0 0 48%;
+        max-width: 48%;
       }
     }
   </style>
@@ -89,6 +97,8 @@
   <div class="cart" id="cart">
     Keranjang: <span id="cartCount">0</span> produk
   </div>
+
+  <div class="cart-list" id="cartList"></div>
 
   <div class="container" id="productContainer"></div>
 
@@ -121,9 +131,20 @@
       };
     });
 
-    let cartCount = 0;
+    let cart = [];
     const container = document.getElementById('productContainer');
     const cartDisplay = document.getElementById('cartCount');
+    const cartList = document.getElementById('cartList');
+
+    function updateCart() {
+      cartDisplay.textContent = cart.length;
+      if (cart.length === 0) {
+        cartList.style.display = 'none';
+        return;
+      }
+      cartList.style.display = 'block';
+      cartList.innerHTML = '<h4>Isi Keranjang:</h4><ul>' + cart.map(item => `<li>${item}</li>`).join('') + '</ul>';
+    }
 
     products.forEach(product => {
       const div = document.createElement('div');
@@ -136,8 +157,8 @@
       `;
       const button = div.querySelector('button');
       button.addEventListener('click', () => {
-        cartCount++;
-        cartDisplay.textContent = cartCount;
+        cart.push(product.name);
+        updateCart();
       });
       container.appendChild(div);
     });
